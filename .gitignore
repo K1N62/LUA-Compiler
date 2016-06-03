@@ -1,0 +1,12 @@
+bin/*
+doc/html/*
+doc/latex/*
+*.log
+*.o
+*.so
+*.lua
+program.c
+graph.dot
+tree.dot
+controlflow.pdf
+tree.pdf
