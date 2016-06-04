@@ -3,7 +3,7 @@
 #include "Node.h"
 
 
-	/** Handles memory operations
+/** Handles memory operations
 * @author Jim Ahlstrand
 * @todo implement support for float variables and infinite large int
 */
