@@ -38,6 +38,7 @@ public:
     FunctionName,
     FunctionCall,
     FunctionBody,
+    FunctionParam,
     MemberFunction,     //! @todo Implement this
     ListName,           //! @todo Implement this
     Stat,

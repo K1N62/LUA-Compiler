@@ -38,6 +38,7 @@ string Node::getType()
         case Node::Type::FunctionName:    return "FunctionName";
         case Node::Type::FunctionCall:    return "FunctionCall";
         case Node::Type::FunctionBody:    return "FunctionBody";
+        case Node::Type::FunctionParam:   return "FunctionParam";
         case Node::Type::MemberFunction:  return "MemberFunction";
         case Node::Type::ListName:        return "ListName";
         case Node::Type::Stat:            return "Stat";
@@ -104,6 +105,16 @@ BBlock* Node::convert(BBlock* out)
   ThreeAd* a;
 
   switch (this->type) {
+    case FunctionParam:
+      // Get parameters from ListName
+      param = LEFT;
+
+      l = param->children[0]->getName();
+      r = l;
+      o = "P1";
+      out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncParam));
+
+      return out;
     case FunctionBody:
       if (debug)
         std::cout << "Converting function body @ " << out << std::endl;
@@ -119,7 +130,8 @@ BBlock* Node::convert(BBlock* out)
       functions.push_back(func);
 
       // Convert the body blocks
-      current = RIGHT->convert(func);
+      current = LEFT->convert(func);
+      current = RIGHT->convert(current);
 
       // Add function footer
       current->addIns(ThreeAd("FF", "FF", "FF", ThreeAd::Type::FuncFoot));

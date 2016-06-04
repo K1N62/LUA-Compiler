@@ -4,6 +4,9 @@
 #include <list>
 #include <map>
 
+#define VAR_REG "r15"
+#define STR_REG "r14"
+
 using namespace std;
 
 class BBlock;
@@ -27,6 +30,7 @@ public:
     FuncHead,
     FuncFoot,
     FuncCall,
+    FuncParam,
     Return,
     LessThan,
     LessOrEqual,
@@ -54,11 +58,6 @@ public:
   void setString(bool s) { this->isString = s; }
 
 private:
-  string  VAR_REG   = "rdi",
-          STR_REG   = "rsi",
-          TYPE_REG  = "r8",
-          TYPE_INT  = "$0x0",
-          TYPE_STR  = "$0x1";
 
   bool isString;
   void loadlhs(ostream &os, map<string, int> &varMap);

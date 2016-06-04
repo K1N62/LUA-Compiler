@@ -47,55 +47,60 @@
 
 chunk         : /* EMPTY */
               	{ $$ = NULL; }
-              | rep_stat opt_laststat                               {
-                                                                      $$ = $1;
-                                                                      if ($2 != NULL )
-                                                                        $$->addChild($2);
-                                                                      root = $$;
-                                                                    }
+              | rep_stat opt_laststat
+                {
+                  $$ = $1;
+                  if ($2 != NULL )
+                    $$->addChild($2);
+                  root = $$;
+                }
               ;
 
 block         : chunk
               	{ $$ = $1; }
               ;
 
-stat          : varlist EQ explist                                  {
-                                                                      $$ = new Binop(Binop::Type::Assign);
-                                                                      $$->addChild($1);
-                                                                      $$->addChild($3);
-                                                                    }
+stat          : varlist EQ explist
+                {
+                  $$ = new Binop(Binop::Type::Assign);
+                  $$->addChild($1);
+                  $$->addChild($3);
+                }
               | functioncall
               	{ $$ = $1; }
               | DO block _END
               	{ $$->addChild($2);	}
-              | WHILE exp DO block _END                             {
-                                                                      $$ = new Loop(Loop::Type::While);
-                                                                      Node* t = new Node(Node::Type::Test);
-                                                                      t->addChild($2);
-                                                                      t->addChild($4);
-                                                                      $$->addChild(t);
-                                                                    }
-              | REP block UNTIL exp                                 {
-                                                                      $$ = new Loop(Loop::Type::Repeat);
-                                                                      Node* t = new Node(Node::Type::Test);
-                                                                      t->setTestFirst(false);
-                                                                      t->addChild($4);
-                                                                      t->addChild($2);
-                                                                      $$->addChild(t);
-                                                                    }
-              | IF exp THEN block rep_elseif opt_else _END          {
-                                                                      $$ = new Condition(Condition::Type::If);
-                                                                      Node* t = new Node(Node::Type::Test);
-                                                                      t->addChild($2);
-                                                                      t->addChild($4);
-                                                                      $$->addChild(t);
-                                                                      if ($5->size() != 0) {
-                                                                        $5->transferChildren($$);
-                                                                        delete $5;
-                                                                      }
-                                                                      if ($6 != NULL )
-                                                                        $$->addChild($6);
-                                                                    }
+              | WHILE exp DO block _END
+                {
+                  $$ = new Loop(Loop::Type::While);
+                  Node* t = new Node(Node::Type::Test);
+                  t->addChild($2);
+                  t->addChild($4);
+                  $$->addChild(t);
+                }
+              | REP block UNTIL exp
+                {
+                  $$ = new Loop(Loop::Type::Repeat);
+                  Node* t = new Node(Node::Type::Test);
+                  t->setTestFirst(false);
+                  t->addChild($4);
+                  t->addChild($2);
+                  $$->addChild(t);
+                }
+              | IF exp THEN block rep_elseif opt_else _END
+                {
+                  $$ = new Condition(Condition::Type::If);
+                  Node* t = new Node(Node::Type::Test);
+                  t->addChild($2);
+                  t->addChild($4);
+                  $$->addChild(t);
+                  if ($5->size() != 0) {
+                    $5->transferChildren($$);
+                    delete $5;
+                  }
+                  if ($6 != NULL )
+                    $$->addChild($6);
+                }
               | FOR NAME EQ exp COM exp opt_exp DO block _END
                 {
                   // Rewrites to an while loop, does not
@@ -189,30 +194,34 @@ funcbody      : PAROPN opt_parlist PARCLS block _END
                   Node* f = new Node(Node::Type::FunctionBody);
                   if ($2 != NULL ) {
                     $2->reverse();
-                    f->addChild($2);
+                    Node* p = new Node(Node::Type::FunctionParam);
+                    p->addChild($2);
+                    f->addChild(p);
                   }
                   f->addChild($4);
                   $$ = new Memory(f);
                 }
               ;
 
-varlist       : var rep_var                                         {
-                                                                      if ($2->size() == 0) {
-                                                                        $$ = $1;
-                                                                      } else {
-                                                                        $$ = $2;
-                                                                        $$->addChild($1);
-                                                                      }
-                                                                    }
+varlist       : var rep_var
+                {
+                  if ($2->size() == 0) {
+                    $$ = $1;
+                  } else {
+                    $$ = $2;
+                    $$->addChild($1);
+                  }
+                }
               ;
 
 var           : NAME
               	{ $$ = new Memory($1); }
-              | prefixexp BRKOPN exp BRKCLS                         {
-                                                                      $$ = new Node(Node::Type::FieldElement);
-                                                                      $$->addChild($1);
-                                                                      $$->addChild($3);
-                                                                    }
+              | prefixexp BRKOPN exp BRKCLS
+                {
+                  $$ = new Node(Node::Type::FieldElement);
+                  $$->addChild($1);
+                  $$->addChild($3);
+                }
               | prefixexp DOT NAME
                 {
                   $$ = new Memory($3);
@@ -222,25 +231,27 @@ var           : NAME
                 }
               ;
 
-namelist      : NAME rep_list_name                                  {
-                                                                      if ($2->size() > 0) {
-                                                                        $$ = $2;
-                                                                        $$->addChild(new Memory($1));
-                                                                      } else {
-                                                                        $$ = new Node(Node::Type::ListName);
-                                                                        $$->addChild(new Memory($1));
-                                                                      }
-                                                                    }
+namelist      : NAME rep_list_name
+                {
+                  if ($2->size() > 0) {
+                    $$ = $2;
+                    $$->addChild(new Memory($1));
+                  } else {
+                    $$ = new Node(Node::Type::ListName);
+                    $$->addChild(new Memory($1));
+                  }
+                }
               ;
 
-explist       : rep_exp exp                                         {
-                                                                      if ($1->size() != 0) {
-                                                                        $$ = $1;
-                                                                        $$->addChild($2);
-                                                                      } else {
-                                                                        $$ = $2;
-                                                                      }
-                                                                    }
+explist       : rep_exp exp
+                {
+                  if ($1->size() != 0) {
+                    $$ = $1;
+                    $$->addChild($2);
+                  } else {
+                    $$ = $2;
+                  }
+                }
               ;
 
 exp           : NIL
@@ -251,11 +262,12 @@ exp           : NIL
               	{ $$ = new Test(Test::Type::True); }
               | NUM
               	{ $$ = new Memory(stoi($1)); }
-              | STR                                                 {
-                                                                      $1.erase(0,1);
-                                                                      $1.erase($1.length() - 1, 1);
-                                                                      $$ = new Memory($1, true);
-                                                                    }
+              | STR
+                {
+                  $1.erase(0,1);
+                  $1.erase($1.length() - 1, 1);
+                  $$ = new Memory($1, true);
+                }
               | TRIDOT
               	{ $$ = new Memory("...", true); }
               | function
@@ -310,40 +322,60 @@ prefixexp     : var
               	{ $$ = $2; }
               ;
 
-functioncall  : prefixexp args                                      {
-                                                                      $$ = new Node(Node::Type::FunctionCall);
-                                                                      $$->addChild($1);
-                                                                      if ($2 != NULL)
-                                                                        $$->addChild($2);
-                                                                    }
-              | prefixexp COL NAME args                             {
-                                                                      $$ = $1;
-                                                                      $$->addChild(new Memory($3));
-                                                                      $$->addChild($4);
-                                                                    }
+functioncall  : prefixexp args
+                {
+                  // Split up multiple argument lists into several calls
+                  if ($2 != NULL) {
+                    if ($2->getType() == "ExpressionList" && $2->size() > 1) {
+                      $$ = new Node(Node::Type::Stat);
+                      for (unsigned int i = 0; i < $2->size(); i++) {
+                        Node* c = new Node(Node::Type::FunctionCall);
+                        c->addChild(new Memory($1->evalStr()));
+                        c->addChild($2->getChild(i));
+                        $$->addChild(c);
+                      }
+                      delete $1;
+                    } else {
+                      $$ = new Node(Node::Type::FunctionCall);
+                      $$->addChild($1);
+                      $$->addChild($2);
+                    }
+                  } else {
+                    $$ = new Node(Node::Type::FunctionCall);
+                    $$->addChild($1);
+                  }
+                }
+              | prefixexp COL NAME args
+                {
+                  $$ = $1;
+                  $$->addChild(new Memory($3));
+                  $$->addChild($4);
+                }
               ;
 
 args          : PAROPN opt_explist PARCLS
               	{ $$ = $2; }
               | tableconstructor
               	{ $$ = $1; }
-              | STR                                                 {
-                                                                      $1.erase(0,1);
-                                                                      $1.erase($1.length() - 1, 1);
-                                                                      $$ = new Node(Node::Type::ExpressionList);
-                                                                      $$->addChild(new Memory($1, true));
-                                                                    }
+              | STR
+                {
+                  $1.erase(0,1);
+                  $1.erase($1.length() - 1, 1);
+                  $$ = new Node(Node::Type::ExpressionList);
+                  $$->addChild(new Memory($1, true));
+                }
               ;
 
 function      : FUNC funcbody
               	{ $$ = $2; }
               ;
 
-parlist       : namelist opt_tridot                                 {
-                                                                      $$ = $1;
-                                                                      if ($2 != NULL )
-                                                                        $$->addChild($2);
-                                                                    }
+parlist       : namelist opt_tridot
+                {
+                  $$ = $1;
+                  if ($2 != NULL )
+                    $$->addChild($2);
+                }
               | TRIDOT
               	{ $$ = new Node(Node::Type::Tridot); }
               ;
@@ -352,27 +384,30 @@ tableconstructor  : CUROPN opt_fieldlist CURCLS
               	     { $$ = $2; }
                   ;
 
-fieldlist     : field rep_field opt_fieldsep                        {
-                                                                      if ($2->size() != 0) {
-                                                                        $$ = $2;
-                                                                        $$->addChild($1);
-                                                                        $$->moveToFront();
-                                                                      } else {
-                                                                        $$ = $1;
-                                                                      }
-                                                                    }
+fieldlist     : field rep_field opt_fieldsep
+                {
+                  if ($2->size() != 0) {
+                    $$ = $2;
+                    $$->addChild($1);
+                    $$->moveToFront();
+                  } else {
+                    $$ = $1;
+                  }
+                }
               ;
 
-field         : BRKOPN exp BRKCLS EQ exp                            {
-                                                                      $$ = new Binop(Binop::Type::Assign);
-                                                                      $$->addChild($2);
-                                                                      $$->addChild($5);
-                                                                    }
-              | NAME EQ exp                                         {
-                                                                      $$ = new Binop(Binop::Type::Assign);
-                                                                      $$->addChild(new Memory($1));
-                                                                      $$->addChild($3);
-                                                                    }
+field         : BRKOPN exp BRKCLS EQ exp
+                {
+                  $$ = new Binop(Binop::Type::Assign);
+                  $$->addChild($2);
+                  $$->addChild($5);
+                }
+              | NAME EQ exp
+                {
+                  $$ = new Binop(Binop::Type::Assign);
+                  $$->addChild(new Memory($1));
+                  $$->addChild($3);
+                }
               | exp
               	{ $$ = $1; }
               ;
@@ -413,13 +448,14 @@ rep_exp       : /* EMPTY */
 
 rep_elseif    : /* EMPTY */
               	{ $$ = new Condition(Condition::Type::If); }
-              | rep_elseif ELSEIF exp THEN block                    {
-                                                                      $$ = $1;
-                                                                      Node* t = new Node(Node::Type::Test);
-                                                                      t->addChild($3);
-                                                                      t->addChild($5);
-                                                                      $$->addChild(t);
-                                                                    }
+              | rep_elseif ELSEIF exp THEN block
+                {
+                  $$ = $1;
+                  Node* t = new Node(Node::Type::Test);
+                  t->addChild($3);
+                  t->addChild($5);
+                  $$->addChild(t);
+                }
               ;
 
 rep_stat      : /* EMPTY */

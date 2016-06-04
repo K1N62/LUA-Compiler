@@ -108,8 +108,8 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
   os << "asm(" << endl;
 
   // Load variable array
-  os << "\"leaq %[var], %%rdi\\n\\t\"" << endl;
-  os << "\"leaq %[str], %%rsi\\n\\t\"";
+  os << "\"leaq %[var], %% " << VAR_REG << "\\n\\t\"" << endl;
+  os << "\"leaq %[str], %% " << STR_REG << "\\n\\t\"";
 
   for (auto f : functions)
   {
@@ -161,13 +161,15 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
   os << "  [readInt]  \"+g\" (readInt)" << endl;
   os << ":" << endl;
   os << ": \"rax\"," << endl;
-  os << "  \"al\"," << endl;
-  os << "  \"bl\"," << endl;
   os << "  \"rbx\"," << endl;
   os << "  \"rcx\"," << endl;
   os << "  \"rdx\"," << endl;
   os << "  \"rdi\"," << endl;
-  os << "  \"rsi\"" << endl;
+  os << "  \"rsi\"," << endl;
+  os << "  \"al\"," << endl;
+  os << "  \"bl\"," << endl;
+  os << "  \"r15\"," << endl;
+  os << "  \"r14\"" << endl;
   os << ");" << endl;
 
   // End main

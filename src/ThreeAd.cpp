@@ -21,6 +21,7 @@ string ThreeAd::getType()
         case ThreeAd::Type::FuncHead:         return "FuncHead";
         case ThreeAd::Type::FuncFoot:         return "FuncFoot";
         case ThreeAd::Type::FuncCall:         return "FuncCall";
+        case ThreeAd::Type::FuncParam:        return "FuncParam";
         case ThreeAd::Type::Return:           return "Return";
         case ThreeAd::Type::Addition:         return "Addition";
         case ThreeAd::Type::Subtraction:      return "Subtraction";
@@ -87,6 +88,22 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
   os << "\"# --[ " << result << " := " << this->lhs << " " << this->getType() << " " << this->rhs << " ]-- \\n\\t\"" << endl;
 
   switch (this->t) {
+    case FuncParam:
+      // Load parameters
+      if (this->result == "P1")
+        os << "\"movq %%rdi, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
+      else if (this->result == "P2")
+        os << "\"movq %%rsi, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
+      else if (this->result == "P3")
+        os << "\"movq %%rdx, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
+      else if (this->result == "P4")
+        os << "\"movq %%rcx, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
+      else if (this->result == "P5")
+        os << "\"movq %%r8, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
+      else if (this->result == "P6")
+        os << "\"movq %%r9, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
+        //! @todo Then load from stack
+      break;
     case FuncHead:
       // Push base pointer to stack
       os << "\"pushq %%rbp\\n\\t\"" << endl;
@@ -106,7 +123,7 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
       os << "\"ret\\n\\t\"" << endl;
       break;
     case Return:
-      os << "\"movq " << varMap[this->result] << "(%%" << VAR_REG << ")" << ", %%rax\\n\\t\"" << endl;
+      loadlhs(os, varMap);
       break;
     case String:
       os << "\"leaq " << strMap[this->result] << "(%%" << STR_REG << ")" << ", %%rax\\n\\t\"" << endl;
