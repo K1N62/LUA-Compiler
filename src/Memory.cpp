@@ -10,7 +10,7 @@ Memory::Memory() : Node()
     this->func          = NULL;
 }
 
-Memory::Memory(int value) : Node()
+Memory::Memory(int v) : Node()
 {
     if (debug)
         cout << " + Creating new Integer " << " @ " << this << " : " << to_string(value) << endl;
@@ -21,7 +21,7 @@ Memory::Memory(int value) : Node()
     this->name          = to_string(value);
 }
 
-Memory::Memory(string value, bool isConstant) : Node()
+Memory::Memory(string v, bool isConstant) : Node()
 {
     if (debug) {
       string tmp = isConstant ? "String" : "Variable";
@@ -36,10 +36,10 @@ Memory::Memory(string value, bool isConstant) : Node()
         this->name = value;
 }
 
-Memory::Memory(Node* func, bool isSoftLink) : Node()
+Memory::Memory(Func* f, bool isSoftLink) : Node()
 {
-    if (debug)
-        cout << " + Creating new Function " << " @ " << func << endl;
+  if (debug)
+    cout << " + Creating new Function " << " @ " << func << endl;
  	this->type          = Type::Function;
   this->str           = "*func";
   this->integer       = 0;

@@ -2,13 +2,14 @@
 
 #include <string>
 #include <iostream>
+#include "Node.h"
 
 /** Handles functions
 * @author Jim Ahlstrand
 */
-class Function : public Node {
+class Func : public Node {
 public:
-  //! Defines types of Function
+  //! Defines types of Func
   enum Type {
       Undefined,
       Name,
@@ -20,15 +21,15 @@ public:
   // Constructors
   // ---------------------------------------
   //! Default constructor
-  Function();
+  Func();
 
   /** Constructor with type
-  * @param t Type Function type to construct
+  * @param t Type Func type to construct
   */
-  Function(Type t);
+  Func(Type t);
 
   //! Default destructor
-  virtual ~Function();
+  virtual ~Func();
 
   // Methods
   // ---------------------------------------
@@ -47,7 +48,7 @@ public:
 protected:
   // Properties
   // ---------------------------------------
-  //! Function type
+  //! Func type
   Type type;
 
 };

@@ -770,7 +770,7 @@ namespace yy {
   case 14:
 #line 152 "src/parser.y" // lalr1.cc:847
     {
-                  yylhs.value.as< Node* > () = new Node(Node::Type::FunctionBody);
+                  yylhs.value.as< Node* > () = new Function(Function::Type::Body);
                   yylhs.value.as< Node* > ()->setLocal(true);
                   yylhs.value.as< Node* > ()->addChild(new Memory(yystack_[1].value.as< string > ()));
                   yylhs.value.as< Node* > ()->addChild(yystack_[0].value.as< Node* > ());
@@ -825,10 +825,10 @@ namespace yy {
   case 19:
 #line 193 "src/parser.y" // lalr1.cc:847
     {
-                  Node* f = new Node(Node::Type::FunctionBody);
+                  Node* f = new Function(Function::Type::Body);
                   if (yystack_[3].value.as< Node* > () != NULL ) {
                     yystack_[3].value.as< Node* > ()->reverse();
-                    Node* p = new Node(Node::Type::FunctionParam);
+                    Node* p = new Function(Function::Type::Param);
                     p->addChild(yystack_[3].value.as< Node* > ());
                     f->addChild(p);
                   }
@@ -1097,19 +1097,19 @@ namespace yy {
                     if (yystack_[0].value.as< Node* > ()->getType() == "ExpressionList" && yystack_[0].value.as< Node* > ()->size() > 1) {
                       yylhs.value.as< Node* > () = new Node(Node::Type::Stat);
                       for (unsigned int i = 0; i < yystack_[0].value.as< Node* > ()->size(); i++) {
-                        Node* c = new Node(Node::Type::FunctionCall);
+                        Node* c = new Function(Function::Type::Call);
                         c->addChild(new Memory(yystack_[1].value.as< Node* > ()->evalStr()));
                         c->addChild(yystack_[0].value.as< Node* > ()->getChild(i));
                         yylhs.value.as< Node* > ()->addChild(c);
                       }
                       delete yystack_[1].value.as< Node* > ();
                     } else {
-                      yylhs.value.as< Node* > () = new Node(Node::Type::FunctionCall);
+                      yylhs.value.as< Node* > () = new Function(Function::Type::Call);
                       yylhs.value.as< Node* > ()->addChild(yystack_[1].value.as< Node* > ());
                       yylhs.value.as< Node* > ()->addChild(yystack_[0].value.as< Node* > ());
                     }
                   } else {
-                    yylhs.value.as< Node* > () = new Node(Node::Type::FunctionCall);
+                    yylhs.value.as< Node* > () = new Function(Function::Type::Call);
                     yylhs.value.as< Node* > ()->addChild(yystack_[1].value.as< Node* > ());
                   }
                 }
@@ -1231,7 +1231,7 @@ namespace yy {
 
   case 71:
 #line 422 "src/parser.y" // lalr1.cc:847
-    { yylhs.value.as< Node* > () = new Node(Node::Type::FunctionName); }
+    { yylhs.value.as< Node* > () = new Function(Function::Type::Name); }
 #line 1236 "src/parser.cpp" // lalr1.cc:847
     break;
 
