@@ -89,7 +89,6 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
   genStrMap(root, strMap, s);
 
   set<BBlock*, classcomp> done, todo;
-  todo.insert(start);
 
   // Header
   os << "#include <stdio.h>" << endl << "int main()" << endl << "{" << endl;
@@ -109,8 +108,12 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
 
   // Load variable array
   os << "\"leaq %[var], %% " << VAR_REG << "\\n\\t\"" << endl;
-  os << "\"leaq %[str], %% " << STR_REG << "\\n\\t\"";
+  os << "\"leaq %[str], %% " << STR_REG << "\\n\\t\"" << endl;
 
+  // Add jump to skip functions
+  os << "\"jmp lbl0\\n\\t\"" << endl;
+
+  // Dump functions
   for (auto f : functions)
   {
     map<string, int> funcVarMap;
@@ -134,6 +137,9 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
     }
   }
 
+  todo.insert(start);
+
+  // Dump blocks
   while(todo.size() > 0)
   {
     // Pop an arbitrary element from todo set

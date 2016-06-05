@@ -11,7 +11,7 @@ BIN 			= bin
 OBJ				= obj
 INC 			= inc
 DOC 			= doc
-PROG			= $(BIN)/comp
+PROG			= $(BIN)/compiler
 
 # Flags
 LDFLAGS		=
