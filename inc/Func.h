@@ -11,7 +11,6 @@ class Func : public Node {
 public:
   //! Defines types of Func
   enum Type {
-      Undefined,
       Name,
       Call,
       Body,

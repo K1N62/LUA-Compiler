@@ -13,37 +13,37 @@ Memory::Memory() : Node()
 Memory::Memory(int v) : Node()
 {
     if (debug)
-        cout << " + Creating new Integer " << " @ " << this << " : " << to_string(value) << endl;
+        cout << " + Creating new Integer " << " @ " << this << " : " << to_string(v) << endl;
     this->type          = Type::Number;
-    this->str           = to_string(value);
-    this->integer       = value;
+    this->str           = to_string(v);
+    this->integer       = v;
     this->func          = NULL;
-    this->name          = to_string(value);
+    this->name          = to_string(v);
 }
 
 Memory::Memory(string v, bool isConstant) : Node()
 {
     if (debug) {
       string tmp = isConstant ? "String" : "Variable";
-      cout << " + Creating new " << tmp << " @ " << this << " : " << value << endl;
+      cout << " + Creating new " << tmp << " @ " << this << " : " << v << endl;
     }
     this->type          = isConstant ? Type::String : Type::Variable;
-    this->str           = value;
+    this->str           = v;
     this->integer       = 0;
     this->func          = NULL;
     // Set name of node to variable name
     if (!isConstant)
-        this->name = value;
+        this->name = v;
 }
 
 Memory::Memory(Func* f, bool isSoftLink) : Node()
 {
   if (debug)
-    cout << " + Creating new Function " << " @ " << func << endl;
+    cout << " + Creating new Function " << " @ " << f << endl;
  	this->type          = Type::Function;
   this->str           = "*func";
   this->integer       = 0;
- 	this->func          = func;
+ 	this->func          = f;
  	this->isSoftLink    = isSoftLink;
 }
 

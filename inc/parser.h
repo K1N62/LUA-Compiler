@@ -48,9 +48,10 @@
   #include "Binop.h"
   #include "Memory.h"
   #include "Condition.h"
+  #include "Func.h"
   using namespace std;
 
-#line 54 "inc/parser.h" // lalr1.cc:372
+#line 55 "inc/parser.h" // lalr1.cc:372
 
 
 # include <vector>
@@ -126,7 +127,7 @@
 
 
 namespace yy {
-#line 130 "inc/parser.h" // lalr1.cc:372
+#line 131 "inc/parser.h" // lalr1.cc:372
 
 
 
@@ -1592,7 +1593,7 @@ namespace yy {
 
 
 } // yy
-#line 1596 "inc/parser.h" // lalr1.cc:372
+#line 1597 "inc/parser.h" // lalr1.cc:372
 
 
 

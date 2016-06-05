@@ -5,12 +5,17 @@
 
 Func::Func() : Node()
 {
-  this->type = Type::Undefined;
+  this->type = Type::Name;
 }
 
 Func::Func(Type t) : Node()
 {
   this->type = t;
+}
+
+Func::~Func()
+{
+  // Nothing
 }
 
 std::string Func::getType()
@@ -40,7 +45,7 @@ BBlock* Func::convert(BBlock* out)
       // Get parameters from ListName
       param = LEFT;
 
-      l = param->children[0]->getName();
+      l = param->getChild(0)->getName();
       r = l;
       o = "P1";
       out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncParam));
@@ -92,5 +97,7 @@ BBlock* Func::convert(BBlock* out)
       out->addIns(*a);
       return current;
 
+    default:
+      return current;
     }
 }

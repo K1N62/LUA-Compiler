@@ -10,6 +10,7 @@
   #include "Binop.h"
   #include "Memory.h"
   #include "Condition.h"
+  #include "Func.h"
   using namespace std;
 }
 %code {
@@ -150,7 +151,7 @@ stat          : varlist EQ explist
                 }
               | LOCAL FUNC NAME funcbody
                 {
-                  $$ = new Function(Function::Type::Body);
+                  $$ = new Func(Func::Type::Body);
                   $$->setLocal(true);
                   $$->addChild(new Memory($3));
                   $$->addChild($4);
@@ -191,10 +192,10 @@ funcname      : NAME rep_func_name opt_name
 
 funcbody      : PAROPN opt_parlist PARCLS block _END
                 {
-                  Node* f = new Function(Function::Type::Body);
+                  Func* f = new Func(Func::Type::Body);
                   if ($2 != NULL ) {
                     $2->reverse();
-                    Node* p = new Function(Function::Type::Param);
+                    Func* p = new Func(Func::Type::Param);
                     p->addChild($2);
                     f->addChild(p);
                   }
@@ -329,19 +330,19 @@ functioncall  : prefixexp args
                     if ($2->getType() == "ExpressionList" && $2->size() > 1) {
                       $$ = new Node(Node::Type::Stat);
                       for (unsigned int i = 0; i < $2->size(); i++) {
-                        Node* c = new Function(Function::Type::Call);
+                        Func* c = new Func(Func::Type::Call);
                         c->addChild(new Memory($1->evalStr()));
                         c->addChild($2->getChild(i));
                         $$->addChild(c);
                       }
                       delete $1;
                     } else {
-                      $$ = new Function(Function::Type::Call);
+                      $$ = new Func(Func::Type::Call);
                       $$->addChild($1);
                       $$->addChild($2);
                     }
                   } else {
-                    $$ = new Function(Function::Type::Call);
+                    $$ = new Func(Func::Type::Call);
                     $$->addChild($1);
                   }
                 }
@@ -419,7 +420,7 @@ fieldsep      : COM
               ;
 
 rep_func_name : /* EMPTY */
-              	{ $$ = new Function(Function::Type::Name); }
+              	{ $$ = new Func(Func::Type::Name); }
               | rep_func_name DOT NAME
               	{
               	   $$->addChild(new Memory($3));
