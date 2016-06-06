@@ -45,10 +45,12 @@ BBlock* Func::convert(BBlock* out)
       // Get parameters from ListName
       param = LEFT;
 
-      l = param->getChild(0)->getName();
-      r = l;
-      o = "P1";
-      out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncParam));
+      for (size_t i = 0; i < param->size(); i++) {
+        l = param->getChild(0)->getName();
+        r = l;
+        o = "P"+to_string(i);
+        out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncParam));
+      }
 
       return out;
 

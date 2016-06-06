@@ -90,17 +90,17 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
   switch (this->t) {
     case FuncParam:
       // Load parameters
-      if (this->result == "P1")
+      if (this->result == "P0")
         os << "\"movq %%rdi, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P2")
+      else if (this->result == "P1")
         os << "\"movq %%rsi, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P3")
+      else if (this->result == "P2")
         os << "\"movq %%rdx, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P4")
+      else if (this->result == "P3")
         os << "\"movq %%rcx, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P5")
+      else if (this->result == "P4")
         os << "\"movq %%r8, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P6")
+      else if (this->result == "P5")
         os << "\"movq %%r9, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
         //! @todo Load rest of parameters from stack
       break;
