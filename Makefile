@@ -29,14 +29,24 @@ SOURCES 	= $(wildcard $(SRC)/*.cpp)
 OBJECTS 	= $(addprefix $(OBJ)/,$(notdir $(SOURCES:.cpp=.o)))
 
 # Default behaviour
-all: dir libr bison flex $(PROG)
+all: libr $(PROG)
 
 # Compile all sources
-$(PROG): $(OBJECTS)
-	$(LD) $(LDFLAGS) $(OBJECTS) -o $(PROG)
+$(PROG): $(OBJ)/$(BISON).o $(OBJ)/$(LEX).o $(OBJECTS)
+	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OBJ)/%.o: $(SRC)/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJ)/$(LEX).o: $(SRC)/$(LEX).cpp
+	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJ)/$(BISON).o: $(SRC)/$(BISON).cpp
+	$(CC) $(CFLAGS) $< -o $@
+
+$(SRC)/$(LEX).cpp: flex
+
+$(SRC)/$(BISON).cpp: bison
 
 # create scanner
 flex:
