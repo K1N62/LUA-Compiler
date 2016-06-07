@@ -97,14 +97,14 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
   os << "#include <stdio.h>" << endl << "int main()" << endl << "{" << endl;
 
   // Variable declaration
-  os << "double var[" << varMap.size() << "] = {0};" << endl;
-  os << "double intbuf[1]   = {0};" << endl;
-  os << "char   str[]       = \"" << s << "\";" << endl;
-  os << "char   printInt[]  = \"%d\\n\";" << endl;
-  os << "char   printStr[]  = \"%s\\n\";" << endl;
-  os << "char   writeInt[]  = \"%d\";" << endl;
-  os << "char   writeStr[]  = \"%s\";" << endl;
-  os << "char   readInt[]   = \"%d\";" << endl;
+  os << "static double var[" << varMap.size() << "] = {0};" << endl;
+  os << "static double intbuf[1]   = {0};" << endl;
+  os << "static char   str[]       = \"" << s << "\";" << endl;
+  os << "static char   printInt[]  = \"%d\\n\";" << endl;
+  os << "static char   printStr[]  = \"%s\\n\";" << endl;
+  os << "static char   writeInt[]  = \"%d\";" << endl;
+  os << "static char   writeStr[]  = \"%s\";" << endl;
+  os << "static char   readInt[]   = \"%d\";" << endl;
 
   // start asm
   os << "asm(" << endl;

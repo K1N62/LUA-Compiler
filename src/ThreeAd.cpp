@@ -162,7 +162,6 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
       break;
     case FuncCallFoot:
       // Pop general registers
-      store(os, varMap);
       os << "\"popq %%" << STR_REG << "\\n\\t\"" << endl;
       os << "\"popq %%" << VAR_REG << "\\n\\t\"" << endl;
       os << "\"popq %%rbx\\n\\t\"" << endl;
@@ -213,6 +212,7 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
       } else {
         os << "\"call " << this->lhs << "\\n\\t\"" << endl;
       }
+      store(os, varMap);
       break;
     case Return:
       loadlhs(os, varMap);
