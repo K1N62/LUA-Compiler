@@ -63,7 +63,7 @@ BBlock* Func::convert(BBlock* out)
       func->setLabel(this->funcname);
 
       // Add function header
-      func->addIns(ThreeAd("FH", "FH", "FH", ThreeAd::Type::FuncHead));
+      func->addIns(ThreeAd("NS", "FH", "FH", ThreeAd::Type::FuncHead));
 
       // Add function to functionslist
       functions.push_back(func);
@@ -73,7 +73,7 @@ BBlock* Func::convert(BBlock* out)
       current = RIGHT->convert(current);
 
       // Add function footer
-      current->addIns(ThreeAd("FF", "FF", "FF", ThreeAd::Type::FuncFoot));
+      current->addIns(ThreeAd("NS", "FF", "FF", ThreeAd::Type::FuncFoot));
       return out;
 
     case Call:
@@ -84,7 +84,7 @@ BBlock* Func::convert(BBlock* out)
       RIGHT->convert(out);
 
       // Function call header
-      out->addIns(ThreeAd("FCH", "FCH", "FCH", ThreeAd::Type::FuncCallHead));
+      out->addIns(ThreeAd("NS", "FCH", "FCH", ThreeAd::Type::FuncCallHead));
 
       // Special case with print, write and read
       fname = LEFT->evalStr();
@@ -127,7 +127,7 @@ BBlock* Func::convert(BBlock* out)
 
       }
       // Function call footer
-      out->addIns(ThreeAd("FCF", "FCF", "FCF", ThreeAd::Type::FuncCallFoot));
+      out->addIns(ThreeAd("NS", "FCF", "FCF", ThreeAd::Type::FuncCallFoot));
 
       return current;
 

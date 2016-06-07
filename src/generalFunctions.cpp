@@ -25,10 +25,13 @@ int genVarMap(BBlock* start, map<string, int> &varMap)
     todo.erase(first);
 
     for (auto &i : *next->getIns()) {
-      // Add result name if not exists
-      if (varMap.find(i.result) == varMap.end()) {
-        varMap[i.result] = index;
-        index += sizeof(double);
+      // Only store if result is not NS (no store)
+      if (i.result != "NS"){
+        // Add result name if not exists
+        if (varMap.find(i.result) == varMap.end()) {
+          varMap[i.result] = index;
+          index += sizeof(double);
+        }
       }
       // Add lhs name if not exists
       if (varMap.find(i.lhs) == varMap.end()) {

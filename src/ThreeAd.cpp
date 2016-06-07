@@ -102,7 +102,9 @@ void ThreeAd::setparam(ostream &os, map<string, int> &varMap, int i)
 
 void ThreeAd::store(ostream &os, map<string, int> &varMap)
 {
-  os << "\"movq %%rax, " << varMap[this->result] << "(%%" << VAR_REG << ")" << "\\n\\t\"" << endl;
+  // Only store if result is not NS (no store)
+  if (this->result != "NS")
+    os << "\"movq %%rax, " << varMap[this->result] << "(%%" << VAR_REG << ")" << "\\n\\t\"" << endl;
 }
 
 void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<string, int> &strMap)
@@ -185,6 +187,7 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
     case FuncCall:
       // Special case if print, read and write
       if (this->lhs == "print") {
+        loadrhs(os, varMap);
         if (this->isString)
           os << "\"leaq %[printStr], %%rdi\\n\\t\"" << endl;
         else
@@ -193,6 +196,7 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
         os << "\"movq $0, %%rax\\n\\t\"" << endl;
         os << "\"call printf\\n\\t\"" << endl;
       } else if (this->lhs == "write") {
+        loadrhs(os, varMap);
         if (this->isString)
           os << "\"leaq %[writeStr], %%rdi\\n\\t\"" << endl;
         else
