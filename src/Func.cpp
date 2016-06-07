@@ -35,7 +35,7 @@ BBlock* Func::convert(BBlock* out)
 {
   BBlock* current = out;
   BBlock* func;
-  string l, r, o;
+  string l, r, o, fname;
   Node* param;
   ThreeAd* a;
 
@@ -77,26 +77,58 @@ BBlock* Func::convert(BBlock* out)
       return out;
 
     case Call:
+      //! @todo Split functioncall into callheader call and callfooter
       //! @remark only one parameter and not expression lists
-      // First child
-      if (RIGHT->getType() == "ExpressionList")
-        param = RIGHT->getChild(0);
-      else
-        param = RIGHT;
-      param->convert(out);
-      // Then this node
-      l = LEFT->getName();
-      r = param->getName();
-      o = this->getName();
 
-      //! @remark memoryleak
-      a = new ThreeAd(o, l, r, ThreeAd::Type::FuncCall);
+      // convert the parameters first
+      RIGHT->convert(out);
 
-      // Check if print and string or int
-      if (param->getType() == "String")
-        a->setString(true);
+      // Function call header
+      out->addIns(ThreeAd("FCH", "FCH", "FCH", ThreeAd::Type::FuncCallHead));
 
-      out->addIns(*a);
+      // Special case with print, write and read
+      fname = LEFT->evalStr();
+      if (fname == "print" || fname == "write" || fname == "read") {
+        // Get only first child
+        if (RIGHT->size() > 0)
+          param = RIGHT->getChild(0);
+        else
+          param = RIGHT;
+
+        l = LEFT->getName();
+        r = param->getName();
+        o = this->getName();
+
+        //! @remark memoryleak
+        a = new ThreeAd(o, l, r, ThreeAd::Type::FuncCall);
+
+        // Check if print and string or int
+        if (param->getType() == "String")
+          a->setString(true);
+
+        out->addIns(*a);
+      } else {
+        // Load parameters
+        if (RIGHT->size() > 0)
+          for (size_t i = 0; i < RIGHT->size(); i++) {
+            l = RIGHT->getChild(i)->getName();
+            r = l;
+            o = "P" + to_string(i);
+            out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncCallParam));
+          }
+        else
+          out->addIns(ThreeAd("P0", RIGHT->getName(), RIGHT->getName(), ThreeAd::Type::FuncCallParam));
+
+        // Call function
+        l = LEFT->getName();
+        r = l;
+        o = this->getName();
+        out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncCall));
+
+      }
+      // Function call footer
+      out->addIns(ThreeAd("FCF", "FCF", "FCF", ThreeAd::Type::FuncCallFoot));
+
       return current;
 
     default:

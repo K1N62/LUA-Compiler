@@ -33,6 +33,9 @@ public:
     Power,
     FuncHead,
     FuncFoot,
+    FuncCallHead,
+    FuncCallFoot,
+    FuncCallParam,
     FuncCall,
     FuncParam,
     Return,
@@ -96,6 +99,8 @@ public:
   void setString(bool s) { this->isString = s; }
 
 private:
+  //! Type of ThreeAd
+  Type t;
   //! Is string flag
   bool isString;
 
@@ -123,9 +128,14 @@ private:
    */
   void store(ostream &os, map<string, int> &varMap);
 
+  /** Loads a parameter to correct register
+   * @param os ostream Output stream
+   * @param varMap map Map of varible names and their index
+   * @param i int Parameter index
+   */
+  void setparam(ostream &os, map<string, int> &varMap, int i);
+
 public:
-  //! Type of ThreeAd
-  Type t;
   //! result, left hand side, right hand side
   string result, lhs, rhs;
 };
