@@ -157,13 +157,13 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
       // push general registers
       os << "\"pushq %%rax\\n\\t\"" << endl;
       os << "\"pushq %%rbx\\n\\t\"" << endl;
-      os << "\"pushq %%" << VAR_REG << "\\n\\t\"" << endl;
-      os << "\"pushq %%" << STR_REG << "\\n\\t\"" << endl;
+      //os << "\"pushq %%" << VAR_REG << "\\n\\t\"" << endl;
+      //os << "\"pushq %%" << STR_REG << "\\n\\t\"" << endl;
       break;
     case FuncCallFoot:
       // Pop general registers
-      os << "\"popq %%" << STR_REG << "\\n\\t\"" << endl;
-      os << "\"popq %%" << VAR_REG << "\\n\\t\"" << endl;
+      //os << "\"popq %%" << STR_REG << "\\n\\t\"" << endl;
+      //os << "\"popq %%" << VAR_REG << "\\n\\t\"" << endl;
       os << "\"popq %%rbx\\n\\t\"" << endl;
       os << "\"popq %%rax\\n\\t\"" << endl;
       break;

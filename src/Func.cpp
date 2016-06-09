@@ -89,8 +89,8 @@ BBlock* Func::convert(BBlock* out)
       // Special case with print, write and read
       fname = LEFT->evalStr();
       if (fname == "print" || fname == "write" || fname == "read") {
-        // Get only first child
-        if (RIGHT->size() > 0)
+
+        if (RIGHT->getType() == "ExpressionList")
           param = RIGHT->getChild(0);
         else
           param = RIGHT;
@@ -109,7 +109,7 @@ BBlock* Func::convert(BBlock* out)
         out->addIns(*a);
       } else {
         // Load parameters
-        if (RIGHT->size() > 0)
+        /*if (RIGHT->size() > 0)
           for (size_t i = 0; i < RIGHT->size(); i++) {
             l = RIGHT->getChild(i)->getName();
             r = l;
@@ -117,7 +117,7 @@ BBlock* Func::convert(BBlock* out)
             out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncCallParam));
           }
         else
-          out->addIns(ThreeAd("P0", RIGHT->getName(), RIGHT->getName(), ThreeAd::Type::FuncCallParam));
+        */  out->addIns(ThreeAd("P0", RIGHT->getName(), RIGHT->getName(), ThreeAd::Type::FuncCallParam));
 
         // Call function
         l = LEFT->getName();
