@@ -97,7 +97,6 @@ void ThreeAd::setparam(ostream &os, map<string, int> &varMap, int i)
     case 5: os << "%%r9"; break;
   }
   os << "\\n\\t\"" << endl;
-
 }
 
 void ThreeAd::store(ostream &os, map<string, int> &varMap)

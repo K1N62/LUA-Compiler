@@ -183,6 +183,24 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
 
   // End main
   os << "}" << endl;
+
+  // print varmap for debug
+  if (debug) {
+    os << "/* VAR MAP (variable name : offset)" << endl;
+    for (auto const &var : varMap) {
+        os << "* " << var.first << "\t: " << var.second << endl;
+    }
+    os << "*/" << endl;
+  }
+  os << endl;
+  // print strmap for debug
+  if (debug) {
+    os << "/* STR MAP (string name : offset)" << endl;
+    for (auto const &var : strMap) {
+        os << "* " << var.first << "\t: " << var.second << endl;
+    }
+    os << "*/" << endl;
+  }
 }
 
 void printCFG(BBlock* start, ofstream& file)

@@ -74,4 +74,4 @@ graph:
 	dot -Tpdf graph.dot -otree.pdf; dot -Tpdf tree.dot -ocontrolflow.pdf; $(RM) -f graph.dot; $(RM) -f tree.dot
 
 compile: all
-	./bin/compiler -o program.c data.lua; gcc -g -Wall -m64 program.c -o program
+	./bin/compiler -o program.c data.lua; $(CC) -g -Wall -m64 program.c -o program
