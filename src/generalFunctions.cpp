@@ -92,7 +92,6 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
   genStrMap(root, strMap, s);
 
   set<BBlock*, classcomp> done, todo;
-
   // Header
   os << "#include <stdio.h>" << endl << "int main()" << endl << "{" << endl;
 
@@ -186,20 +185,20 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
 
   // print varmap for debug
   if (debug) {
-    os << "/* VAR MAP (variable name : offset)" << endl;
+    cout << endl;
+    cout << "\tVAR MAP (variable name : offset)" << endl;
     for (auto const &var : varMap) {
-        os << "* " << var.first << "\t: " << var.second << endl;
+        cout << "\t" << var.first << "\t: " << var.second << endl;
     }
-    os << "*/" << endl;
+    cout << endl << endl;
   }
-  os << endl;
   // print strmap for debug
   if (debug) {
-    os << "/* STR MAP (string name : offset)" << endl;
+    cout << "\tSTR MAP (string name : offset)" << endl;
     for (auto const &var : strMap) {
-        os << "* " << var.first << "\t: " << var.second << endl;
+        cout << "\t" << var.first << "\t: " << var.second << endl;
     }
-    os << "*/" << endl;
+    cout << endl;
   }
 }
 
