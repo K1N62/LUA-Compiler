@@ -1,6 +1,7 @@
 bin/*
 doc/html/*
 doc/latex/*
+tests/*
 *.log
 *.o
 *.so

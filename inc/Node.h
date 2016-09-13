@@ -35,10 +35,6 @@ public:
     Undefined,
     ExpressionList,     //! @todo Implement this
     VariableList,       //! @todo Implement this
-    FunctionName,
-    FunctionCall,
-    FunctionBody,
-    FunctionParam,
     MemberFunction,     //! @todo Implement this
     ListName,           //! @todo Implement this
     Stat,
@@ -61,6 +57,7 @@ public:
   * @param type Node type of enum Type
   */
   Node(Type type);
+  
   //! Default destructor
   virtual ~Node();
 

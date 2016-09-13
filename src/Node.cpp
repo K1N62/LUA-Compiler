@@ -35,10 +35,6 @@ string Node::getType()
     switch (this->type) {
         case Node::Type::ExpressionList:  return "ExpressionList";
         case Node::Type::VariableList:    return "VariableList";
-        case Node::Type::FunctionName:    return "FunctionName";
-        case Node::Type::FunctionCall:    return "FunctionCall";
-        case Node::Type::FunctionBody:    return "FunctionBody";
-        case Node::Type::FunctionParam:   return "FunctionParam";
         case Node::Type::MemberFunction:  return "MemberFunction";
         case Node::Type::ListName:        return "ListName";
         case Node::Type::Stat:            return "Stat";
@@ -99,66 +95,9 @@ int Node::moveToFront()
 BBlock* Node::convert(BBlock* out)
 {
   BBlock* current = out;
-  BBlock* func;
   string l, r, o;
-  Node* param;
-  ThreeAd* a;
 
   switch (this->type) {
-    case FunctionParam:
-      // Get parameters from ListName
-      param = LEFT;
-
-      l = param->children[0]->getName();
-      r = l;
-      o = "P1";
-      out->addIns(ThreeAd(o, l, r, ThreeAd::Type::FuncParam));
-
-      return out;
-    case FunctionBody:
-      if (debug)
-        std::cout << "Converting function body @ " << out << std::endl;
-
-      // Create new function block
-      func = new BBlock();
-      func->setLabel(this->funcname);
-
-      // Add function header
-      func->addIns(ThreeAd("FH", "FH", "FH", ThreeAd::Type::FuncHead));
-
-      // Add function to functionslist
-      functions.push_back(func);
-
-      // Convert the body blocks
-      current = LEFT->convert(func);
-      current = RIGHT->convert(current);
-
-      // Add function footer
-      current->addIns(ThreeAd("FF", "FF", "FF", ThreeAd::Type::FuncFoot));
-      return out;
-
-    case FunctionCall:
-      //! @remark only one parameter and not expression lists
-      // First child
-      if (RIGHT->getType() == "ExpressionList")
-        param = RIGHT->getChild(0);
-      else
-        param = RIGHT;
-      param->convert(out);
-      // Then this node
-      l = LEFT->getName();
-      r = param->getName();
-      o = this->getName();
-
-      //! @remark memoryleak
-      a = new ThreeAd(o, l, r, ThreeAd::Type::FuncCall);
-
-      // Check if print and string or int
-      if (param->getType() == "String")
-        a->setString(true);
-
-      out->addIns(*a);
-      return current;
 
     case Return:
       // First child

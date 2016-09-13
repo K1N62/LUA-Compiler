@@ -20,6 +20,9 @@ string ThreeAd::getType()
         case ThreeAd::Type::ElseIf:           return "ElseIf";
         case ThreeAd::Type::FuncHead:         return "FuncHead";
         case ThreeAd::Type::FuncFoot:         return "FuncFoot";
+        case ThreeAd::Type::FuncCallHead:     return "FuncCallHead";
+        case ThreeAd::Type::FuncCallFoot:     return "FuncCallFoot";
+        case ThreeAd::Type::FuncCallParam:    return "FuncCallParam";
         case ThreeAd::Type::FuncCall:         return "FuncCall";
         case ThreeAd::Type::FuncParam:        return "FuncParam";
         case ThreeAd::Type::Return:           return "Return";
@@ -54,7 +57,7 @@ string ThreeAd::dump()
 void ThreeAd::loadlhs(ostream &os, map<string, int> &varMap)
 {
   os << "\"movq ";
-  try { //! @todo This should be a flag instead
+  try {
     auto c = stoi(this->lhs);
     os << "$" << c;
   } catch(...) {
@@ -66,7 +69,7 @@ void ThreeAd::loadlhs(ostream &os, map<string, int> &varMap)
 void ThreeAd::loadrhs(ostream &os, map<string, int> &varMap)
 {
   os << "\"movq ";
-  try { //! @todo This should be a flag instead
+  try {
     auto c = stoi(this->rhs);
     os << "$" << c;
   } catch(...) {
@@ -75,9 +78,32 @@ void ThreeAd::loadrhs(ostream &os, map<string, int> &varMap)
   os << ", %%rbx\\n\\t\"" << endl;
 }
 
+void ThreeAd::setparam(ostream &os, map<string, int> &varMap, int i)
+{
+  os << "\"movq ";
+  try {
+    auto c = stoi(this->lhs);
+    os << "$" << c;
+  } catch(...) {
+    os << varMap[this->lhs] << "(%%" << VAR_REG << ")";
+  }
+  os << ", ";
+  switch (i) {
+    case 0: os << "%%rdi"; break;
+    case 1: os << "%%rsi"; break;
+    case 2: os << "%%rdx"; break;
+    case 3: os << "%%rcx"; break;
+    case 4: os << "%%r8"; break;
+    case 5: os << "%%r9"; break;
+  }
+  os << "\\n\\t\"" << endl;
+}
+
 void ThreeAd::store(ostream &os, map<string, int> &varMap)
 {
-  os << "\"movq %%rax, " << varMap[this->result] << "(%%" << VAR_REG << ")" << "\\n\\t\"" << endl;
+  // Only store if result is not NS (no store)
+  if (this->result != "NS")
+    os << "\"movq %%rax, " << varMap[this->result] << "(%%" << VAR_REG << ")" << "\\n\\t\"" << endl;
 }
 
 void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<string, int> &strMap)
@@ -90,23 +116,25 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
   switch (this->t) {
     case FuncParam:
       // Load parameters
-      if (this->result == "P1")
+      if (this->result == "P0")
         os << "\"movq %%rdi, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P2")
+      else if (this->result == "P1")
         os << "\"movq %%rsi, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P3")
+      else if (this->result == "P2")
         os << "\"movq %%rdx, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P4")
+      else if (this->result == "P3")
         os << "\"movq %%rcx, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P5")
+      else if (this->result == "P4")
         os << "\"movq %%r8, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-      else if (this->result == "P6")
+      else if (this->result == "P5")
         os << "\"movq %%r9, " << varMap[this->lhs] << "(%%" << VAR_REG << ")\\n\\t\"" << endl;
-        //! @todo Then load from stack
+        //! @todo Load rest of function load parameters from stack
       break;
     case FuncHead:
       // Push base pointer to stack
       os << "\"pushq %%rbp\\n\\t\"" << endl;
+      // Save varible pointer
+      os << "\"pushq %%" << VAR_REG << "\\n\\t\"" << endl;
       // Move stack pointer to basepointer
       os << "\"movq %%rsp, %%rbp\\n\\t\"" << endl;
       // Increase the stack (by decreasing the value) for variables
@@ -117,10 +145,73 @@ void ThreeAd::translate(ostream &os, BBlock* b, map<string, int> &varMap, map<st
     case FuncFoot:
       // Reset the stack pointer
       os << "\"movq %%rbp, %%rsp\\n\\t\"" << endl;
+      // Pop the variable pointer
+      os << "\"popq %%" << VAR_REG << "\\n\\t\"" << endl;
       // Pop the base pointer
       os << "\"popq %%rbp\\n\\t\"" << endl;
       // Return
       os << "\"ret\\n\\t\"" << endl;
+      break;
+    case FuncCallHead:
+      // push general registers
+      os << "\"pushq %%rax\\n\\t\"" << endl;
+      os << "\"pushq %%rbx\\n\\t\"" << endl;
+      //os << "\"pushq %%" << VAR_REG << "\\n\\t\"" << endl;
+      //os << "\"pushq %%" << STR_REG << "\\n\\t\"" << endl;
+      break;
+    case FuncCallFoot:
+      // Pop general registers
+      //os << "\"popq %%" << STR_REG << "\\n\\t\"" << endl;
+      //os << "\"popq %%" << VAR_REG << "\\n\\t\"" << endl;
+      os << "\"popq %%rbx\\n\\t\"" << endl;
+      os << "\"popq %%rax\\n\\t\"" << endl;
+      break;
+    case FuncCallParam:
+      // Load parameters
+      if (this->result == "P0")
+        setparam(os, varMap, 0);
+      else if (this->result == "P1")
+        setparam(os, varMap, 1);
+      else if (this->result == "P2")
+        setparam(os, varMap, 2);
+      else if (this->result == "P3")
+        setparam(os, varMap, 3);
+      else if (this->result == "P4")
+        setparam(os, varMap, 4);
+      else if (this->result == "P5")
+        setparam(os, varMap, 5);
+      //! @todo Load rest of function call parameters to stack
+      break;
+    case FuncCall:
+      // Special case if print, read and write
+      if (this->lhs == "print") {
+        loadrhs(os, varMap);
+        if (this->isString)
+          os << "\"leaq %[printStr], %%rdi\\n\\t\"" << endl;
+        else
+          os << "\"leaq %[printInt], %%rdi\\n\\t\"" << endl;
+        os << "\"movq %%rbx, %%rsi\\n\\t\"" << endl;
+        os << "\"movq $0, %%rax\\n\\t\"" << endl;
+        os << "\"call printf\\n\\t\"" << endl;
+      } else if (this->lhs == "write") {
+        loadrhs(os, varMap);
+        if (this->isString)
+          os << "\"leaq %[writeStr], %%rdi\\n\\t\"" << endl;
+        else
+          os << "\"leaq %[writeInt], %%rdi\\n\\t\"" << endl;
+        os << "\"movq %%rbx, %%rsi\\n\\t\"" << endl;
+        os << "\"movq $0, %%rax\\n\\t\"" << endl;
+        os << "\"call printf\\n\\t\"" << endl;
+      } else if (this->lhs == "read") {
+        os << "\"leaq %[readInt], %%rdi\\n\\t\"" << endl;
+        os << "\"leaq %[intbuf], %%rsi\\n\\t\"" << endl;
+        os << "\"movq $0, %%rax\\n\\t\"" << endl;
+        os << "\"call scanf\\n\\t\"" << endl;
+        os << "\"movq %[intbuf], %%rax\\n\\t\"" << endl;
+      } else {
+        os << "\"call " << this->lhs << "\\n\\t\"" << endl;
+      }
+      store(os, varMap);
       break;
     case Return:
       loadlhs(os, varMap);
@@ -193,46 +284,6 @@ void ThreeAd::translateOP(ostream &os, BBlock* b)
     case GreaterOrEqual:
       os << "\"cmpq %%rbx, %%rax\\n\\t\"" << endl;
       os << "\"jl " << b->falseExit->getLabel() << "\\n\\t\"" << endl;
-      break;
-    case FuncCall:
-      // push general registers
-      //os << "\"pushq %%rax\\n\\t\"" << endl;
-      os << "\"pushq %%rbx\\n\\t\"" << endl;
-      os << "\"pushq %%" << VAR_REG << "\\n\\t\"" << endl;
-      os << "\"pushq %%" << STR_REG << "\\n\\t\"" << endl;
-
-      if (this->lhs == "print") {
-        if (this->isString)
-          os << "\"leaq %[printStr], %%rdi\\n\\t\"" << endl;
-        else
-          os << "\"leaq %[printInt], %%rdi\\n\\t\"" << endl;
-        os << "\"movq %%rbx, %%rsi\\n\\t\"" << endl;
-        os << "\"movq $0, %%rax\\n\\t\"" << endl;
-        os << "\"call printf\\n\\t\"" << endl;
-      } else if (this->lhs == "write") {
-        if (this->isString)
-          os << "\"leaq %[writeStr], %%rdi\\n\\t\"" << endl;
-        else
-          os << "\"leaq %[writeInt], %%rdi\\n\\t\"" << endl;
-        os << "\"movq %%rbx, %%rsi\\n\\t\"" << endl;
-        os << "\"movq $0, %%rax\\n\\t\"" << endl;
-        os << "\"call printf\\n\\t\"" << endl;
-      } else if (this->lhs == "read") {
-        os << "\"leaq %[readInt], %%rdi\\n\\t\"" << endl;
-        os << "\"leaq %[intbuf], %%rsi\\n\\t\"" << endl;
-        os << "\"movq $0, %%rax\\n\\t\"" << endl;
-        os << "\"call scanf\\n\\t\"" << endl;
-        os << "\"movq %[intbuf], %%rax\\n\\t\"" << endl;
-      } else {
-        os << "\"movq %%rbx, %%rdi\\n\\t\"" << endl;
-        os << "\"call " << this->lhs << "\\n\\t\"" << endl;
-      }
-
-      // Pop general registers
-      os << "\"popq %%" << STR_REG << "\\n\\t\"" << endl;
-      os << "\"popq %%" << VAR_REG << "\\n\\t\"" << endl;
-      os << "\"popq %%rbx\\n\\t\"" << endl;
-      //os << "\"popq %%rax\\n\\t\"" << endl;
       break;
     default:
       os << "\"nop\\n\\t\"" << endl;

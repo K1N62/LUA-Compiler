@@ -25,10 +25,13 @@ int genVarMap(BBlock* start, map<string, int> &varMap)
     todo.erase(first);
 
     for (auto &i : *next->getIns()) {
-      // Add result name if not exists
-      if (varMap.find(i.result) == varMap.end()) {
-        varMap[i.result] = index;
-        index += sizeof(double);
+      // Only store if result is not NS (no store)
+      if (i.result != "NS"){
+        // Add result name if not exists
+        if (varMap.find(i.result) == varMap.end()) {
+          varMap[i.result] = index;
+          index += sizeof(double);
+        }
       }
       // Add lhs name if not exists
       if (varMap.find(i.lhs) == varMap.end()) {
@@ -89,28 +92,31 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
   genStrMap(root, strMap, s);
 
   set<BBlock*, classcomp> done, todo;
-  todo.insert(start);
 
   // Header
   os << "#include <stdio.h>" << endl << "int main()" << endl << "{" << endl;
 
   // Variable declaration
-  os << "double var[" << varMap.size() << "] = {0};" << endl;
-  os << "double intbuf[1]   = {0};" << endl;
-  os << "char   str[]       = \"" << s << "\";" << endl;
-  os << "char   printInt[]  = \"%d\\n\";" << endl;
-  os << "char   printStr[]  = \"%s\\n\";" << endl;
-  os << "char   writeInt[]  = \"%d\";" << endl;
-  os << "char   writeStr[]  = \"%s\";" << endl;
-  os << "char   readInt[]   = \"%d\";" << endl;
+  os << "static double var[" << varMap.size() << "] = {0};" << endl;
+  os << "static double intbuf[1]   = {0};" << endl;
+  os << "static char   str[]       = \"" << s << "\";" << endl;
+  os << "static char   printInt[]  = \"%d\\n\";" << endl;
+  os << "static char   printStr[]  = \"%s\\n\";" << endl;
+  os << "static char   writeInt[]  = \"%d\";" << endl;
+  os << "static char   writeStr[]  = \"%s\";" << endl;
+  os << "static char   readInt[]   = \"%d\";" << endl;
 
   // start asm
   os << "asm(" << endl;
 
   // Load variable array
   os << "\"leaq %[var], %% " << VAR_REG << "\\n\\t\"" << endl;
-  os << "\"leaq %[str], %% " << STR_REG << "\\n\\t\"";
+  os << "\"leaq %[str], %% " << STR_REG << "\\n\\t\"" << endl;
 
+  // Add jump to skip functions
+  os << "\"jmp lbl0\\n\\t\"" << endl;
+
+  // Dump functions
   for (auto f : functions)
   {
     map<string, int> funcVarMap;
@@ -134,6 +140,9 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
     }
   }
 
+  todo.insert(start);
+
+  // Dump blocks
   while(todo.size() > 0)
   {
     // Pop an arbitrary element from todo set
@@ -174,6 +183,24 @@ void dumpCFG(ostream &os, BBlock* start, Node* root)
 
   // End main
   os << "}" << endl;
+
+  // print varmap for debug
+  if (debug) {
+    os << "/* VAR MAP (variable name : offset)" << endl;
+    for (auto const &var : varMap) {
+        os << "* " << var.first << "\t: " << var.second << endl;
+    }
+    os << "*/" << endl;
+  }
+  os << endl;
+  // print strmap for debug
+  if (debug) {
+    os << "/* STR MAP (string name : offset)" << endl;
+    for (auto const &var : strMap) {
+        os << "* " << var.first << "\t: " << var.second << endl;
+    }
+    os << "*/" << endl;
+  }
 }
 
 void printCFG(BBlock* start, ofstream& file)

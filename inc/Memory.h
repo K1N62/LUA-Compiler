@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Node.h"
+#include "Func.h"
 
 
-	/** Handles memory operations
+/** Handles memory operations
 * @author Jim Ahlstrand
 * @todo implement support for float variables and infinite large int
 */
@@ -25,21 +26,22 @@ public:
   Memory();
 
 	/** Constructor with integer type
-  * @param value integer value of the node
+  * @param v integer value of the node
   */
-  Memory(int value);
+  Memory(int v);
 
 	/** Constructor with string type
-  * @param value string value of the node
+  * @param v string value of the node
   * @param isConstant Bool Is this string a constant or variable?
   */
-  Memory(string value, bool isConstant = false);
+  Memory(string v, bool isConstant = false);
 
 	/** Constructor with function type
-  * @param func Node* value of the node
+  * @param f Func* value of the node
   * @param isSoftLink Bool Determines if link to fuction is soft, that is if it shouldn't be handled by destructor
   */
-  Memory(Node* func, bool isSoftLink = false);
+  Memory(Func* f, bool isSoftLink = false);
+
   //! Default destructor
   virtual ~Memory();
 
@@ -64,7 +66,7 @@ public:
 	/** Gets the function pointer
   * @return Node* pointer to the function node
   */
-  Node* getFunc() { return this->func; }
+  Func* getFunc() { return this->func; }
 
 	/** Gets the integer value
   * @return integer
@@ -91,8 +93,8 @@ protected:
   int integer;
   //! String value
   string str;
-  //! Function pointer
-  Node* func;
+  //! Func pointer
+  Func* func;
   //! Is function soft link
   bool isSoftLink;
 };

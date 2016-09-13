@@ -22,7 +22,9 @@ class BBlock
 public:
   // Constructors
   // ---------------------------------------
+  //! Default constructor
   BBlock();
+  //! Default destructor
   virtual ~BBlock();
 
   // Methods
