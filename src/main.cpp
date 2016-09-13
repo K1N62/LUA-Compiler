@@ -4,7 +4,7 @@
  *  Author Jim Ahlstrand
  *    Copyright 2016
  *
- *     Version 1.0
+ *     Version 1.1
  */
 
 // Yes this is super global, tried with macros but want user to control debug
