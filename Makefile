@@ -29,7 +29,7 @@ SOURCES 	= $(wildcard $(SRC)/*.cpp)
 OBJECTS 	= $(addprefix $(OBJ)/,$(notdir $(SOURCES:.cpp=.o)))
 
 # Default behaviour
-all: libr $(PROG)
+all: dir libr $(PROG)
 
 # Compile all sources
 $(PROG): $(OBJ)/$(BISON).o $(OBJ)/$(LEX).o $(OBJECTS)
