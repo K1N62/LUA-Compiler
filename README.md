@@ -1,7 +1,7 @@
 # LUA-Compiler
 ![Build Status](https://travis-ci.org/K1N62/LUA-Compiler.svg?branch=master)
 
-A not so fully featured compiler for LUA
+A simple compiler for LUA
 
 ##Install
 Build the project with
