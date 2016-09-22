@@ -34,6 +34,10 @@ std::string Test::getType()
 
 BBlock* Test::convert(BBlock* out)
 {
+  // Check if this node don't have any children then return, this should not happen!
+  if (this->children.size() == 0)
+    return out;
+  
   if (debug)
     std::cout << "Converting test @ " << out << std::endl;
 
