@@ -19,4 +19,4 @@ before_script:
 
 script:
   - make 
-  - testsuit.sh
+  - ./testsuit.sh
