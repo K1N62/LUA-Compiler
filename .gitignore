@@ -7,3 +7,5 @@ doc/latex/*
 *.pdf
 graph.dot
 tree.dot
+tests/test*/test[0-9]
+tests/test*/test[0-9].c
