@@ -17,4 +17,6 @@ before_script:
   - bison --version
   - flex --version
 
-script: make testsuit.sh
+script:
+  - make 
+  - testsuit.sh
