@@ -18,5 +18,5 @@ before_script:
   - flex --version
 
 script:
-  - make 
-  - testsuit.sh
+  - make
+  - ./testsuit.sh
