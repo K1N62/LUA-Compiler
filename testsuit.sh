@@ -17,8 +17,8 @@ for i in `seq 1 6`; do
 echo " Compiling test $i..."
 ./bin/compiler -d -o tests/test$i/test$i.c tests/test$i/test$i.lua > /dev/null
 g++ -o tests/test$i/test$i tests/test$i/test$i.c > /dev/null
-make graph > /dev/null
-mv *.pdf tests/test$i/ > /dev/null
+#make graph > /dev/null
+#mv *.pdf tests/test$i/ > /dev/null
 done
 
 echo ""
