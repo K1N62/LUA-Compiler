@@ -53,7 +53,7 @@ int main(int argc, char **argv)
       {
       case 'h':
         cout << "                LUA Compiler" << endl;
-        cout << "   Author Jim Ahlstrand (c) 2016 Version 1.0" << endl;
+        cout << "   Author Jim Ahlstrand (c) 2016 Version 1.1" << endl;
         cout << "" << endl;
         cout << " Usage: compiler [OPTIONS] -o outputfile luafile" << endl;
         cout << "" << endl;
